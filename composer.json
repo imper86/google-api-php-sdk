@@ -1,0 +1,24 @@
+{
+    "name": "imper86/google-api-php-sdk",
+    "description": "Simple SDK for Google API",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "imper",
+            "email": "me@imper.info"
+        }
+    ],
+    "require": {
+        "lcobucci/jwt": "^3.3",
+        "psr/log": "^1.1",
+        "ext-json": "*",
+        "php-http/httplug": "^2.0",
+        "php-http/guzzle6-adapter": "^2.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Imper86\\GoogleApiPhpSdk\\": "src"
+        }
+    }
+}
