@@ -76,6 +76,10 @@ class AuthService implements AuthServiceInterface
             $bundle->setCreatedAt(new DateTime());
 
             return $bundle;
+        } catch (BadResponseException $exception) {
+            LogFactory::log($this->logger, $logContext, $exception->getRequest(), $exception->getResponse(), $exception);
+
+            throw $exception;
         } catch (Throwable $exception) {
             LogFactory::log($this->logger, $logContext, $request, null, $exception);
 
@@ -108,6 +112,10 @@ class AuthService implements AuthServiceInterface
             }
 
             return $bundle;
+        } catch (BadResponseException $exception) {
+            LogFactory::log($this->logger, $logContext, $exception->getRequest(), $exception->getResponse(), $exception);
+
+            throw $exception;
         } catch (Throwable $exception) {
             LogFactory::log($this->logger, $logContext, $request, null, $exception);
 
@@ -127,6 +135,8 @@ class AuthService implements AuthServiceInterface
             }
 
             LogFactory::log($this->logger, $logContext, $request, $response, null);
+        } catch (BadResponseException $exception) {
+            LogFactory::log($this->logger, $logContext, $exception->getRequest(), $exception->getResponse(), $exception);
         } catch (Throwable $exception) {
             LogFactory::log($this->logger, $logContext, $request, null, $exception);
 
