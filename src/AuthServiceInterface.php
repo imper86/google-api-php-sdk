@@ -20,9 +20,17 @@ interface AuthServiceInterface
         array $additionalParameters = []
     ): string;
 
-    public function fetchTokenFromCode(AppCredentialsInterface $credentials, string $code): TokenBundleInterface;
+    public function fetchTokenFromCode(
+        AppCredentialsInterface $credentials,
+        string $code,
+        array $logContext = []
+    ): TokenBundleInterface;
 
-    public function fetchTokenFromRefresh(AppCredentialsInterface $credentials, string $refreshToken): TokenBundleInterface;
+    public function fetchTokenFromRefresh(
+        AppCredentialsInterface $credentials,
+        string $refreshToken,
+        array $logContext = []
+    ): TokenBundleInterface;
 
-    public function revokeToken(string $token): void;
+    public function revokeToken(string $token, array $logContext = []): void;
 }

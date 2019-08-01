@@ -21,9 +21,9 @@ class TokenBundle implements TokenBundleInterface
      */
     private $tokenBody;
 
-    public function __construct(string $tokenBody)
+    public function __construct(string $jsonToken)
     {
-        $this->tokenBody = json_decode($tokenBody, true);
+        $this->tokenBody = json_decode($jsonToken, true);
 
         if (json_last_error() !== JSON_ERROR_NONE) {
             throw new InvalidArgumentException(json_last_error_msg(), json_last_error());
@@ -40,11 +40,21 @@ class TokenBundle implements TokenBundleInterface
         return $this->tokenBody['refresh_token'] ?? null;
     }
 
+    public function setRefreshToken(?string $refreshToken): void
+    {
+        $this->tokenBody['refresh_token'] = $refreshToken;
+    }
+
     public function getCreatedAt(): ?DateTime
     {
         $createdAt = $this->tokenBody['created'] ?? null;
 
         return $createdAt ? new DateTime('@' . $createdAt) : null;
+    }
+
+    public function setCreatedAt(?DateTime $createdAt): void
+    {
+        $this->tokenBody['created'] = $createdAt ? $createdAt->getTimestamp() : null;
     }
 
     public function getExpiresAt(): ?DateTime
@@ -59,7 +69,7 @@ class TokenBundle implements TokenBundleInterface
     {
         $expiresAt = $this->getExpiresAt();
 
-        return $expiresAt ? $expiresAt < new DateTime() : false;
+        return $expiresAt ? $expiresAt < new DateTime() : true;
     }
 
     public function getIdToken(): ?Token
@@ -70,7 +80,7 @@ class TokenBundle implements TokenBundleInterface
         return $idTokenString ? $parser->parse($idTokenString) : null;
     }
 
-    public function serialize(): string
+    public function toJson(): string
     {
         return json_encode($this->tokenBody);
     }

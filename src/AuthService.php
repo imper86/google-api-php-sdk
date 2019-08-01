@@ -7,13 +7,19 @@
 
 namespace Imper86\GoogleApiPhpSdk;
 
-use GuzzleHttp\Psr7\Request;
+use DateTime;
 use Http\Adapter\Guzzle6\Client as GuzzleAdapter;
 use Imper86\GoogleApiPhpSdk\Constants\EndpointUri;
+use Imper86\GoogleApiPhpSdk\Factory\LogFactory;
 use Imper86\GoogleApiPhpSdk\Model\Credentials\AppCredentialsInterface;
+use Imper86\GoogleApiPhpSdk\Model\Request\Oauth2\GetRevokeRequestV1;
+use Imper86\GoogleApiPhpSdk\Model\Request\Oauth2\PostTokenFromCodeRequestV1;
+use Imper86\GoogleApiPhpSdk\Model\Request\Oauth2\PostTokenFromRefreshRequestV1;
 use Imper86\GoogleApiPhpSdk\Model\TokenBundle\TokenBundle;
 use Imper86\GoogleApiPhpSdk\Model\TokenBundle\TokenBundleInterface;
 use Psr\Http\Client\ClientInterface;
+use Psr\Log\LoggerInterface;
+use Throwable;
 
 class AuthService implements AuthServiceInterface
 {
@@ -21,10 +27,15 @@ class AuthService implements AuthServiceInterface
      * @var ClientInterface
      */
     private $httpClient;
+    /**
+     * @var LoggerInterface|null
+     */
+    private $logger;
 
-    public function __construct(?ClientInterface $httpClient = null)
+    public function __construct(?ClientInterface $httpClient = null, ?LoggerInterface $logger = null)
     {
         $this->httpClient = $httpClient ?? GuzzleAdapter::createWithConfig([]);
+        $this->logger = $logger;
     }
 
     public function createAuthUrl(
@@ -43,59 +54,67 @@ class AuthService implements AuthServiceInterface
         return EndpointUri::AUTH . '/o/oauth2/v2/auth?' . http_build_query($additionalParameters);
     }
 
-    public function fetchTokenFromCode(AppCredentialsInterface $credentials, string $code): TokenBundleInterface
+    public function fetchTokenFromCode(
+        AppCredentialsInterface $credentials,
+        string $code,
+        array $logContext = []
+    ): TokenBundleInterface
     {
-        $request = new Request(
-            'POST',
-            EndpointUri::API . '/oauth2/v4/token',
-            [
-                'Content-Type' => 'application/x-www-form-urlencoded',
-            ],
-            http_build_query([
-                'code' => $code,
-                'client_id' => $credentials->getClientId(),
-                'client_secret' => $credentials->getClientSecret(),
-                'redirect_uri' => $credentials->getRedirectUri(),
-                'grant_type' => 'authorization_code',
-            ])
-        );
+        $request = new PostTokenFromCodeRequestV1($credentials, $code);
 
-        $response = $this->httpClient->sendRequest($request);
+        try {
+            $response = $this->httpClient->sendRequest($request);
+            LogFactory::log($this->logger, $logContext, $request, $response, null);
 
-        return new TokenBundle((string)$response->getBody());
+            $bundle = new TokenBundle((string)$response->getBody());
+            $bundle->setCreatedAt(new DateTime());
+
+            return $bundle;
+        } catch (Throwable $exception) {
+            LogFactory::log($this->logger, $logContext, $request, null, $exception);
+
+            throw $exception;
+        }
     }
 
-    public function fetchTokenFromRefresh(AppCredentialsInterface $credentials, string $refreshToken): TokenBundleInterface
+    public function fetchTokenFromRefresh(
+        AppCredentialsInterface $credentials,
+        string $refreshToken,
+        array $logContext = []
+    ): TokenBundleInterface
     {
-        $request = new Request(
-            'POST',
-            EndpointUri::API . '/oauth2/v4/token',
-            [
-                'Content-Type' => 'application/x-www-form-urlencoded',
-            ],
-            http_build_query([
-                'refresh_token' => $refreshToken,
-                'client_id' => $credentials->getClientId(),
-                'client_secret' => $credentials->getClientSecret(),
-                'grant_type' => 'refresh_token',
-            ])
-        );
+        $request = new PostTokenFromRefreshRequestV1($credentials, $refreshToken);
 
-        $response = $this->httpClient->sendRequest($request);
+        try {
+            $response = $this->httpClient->sendRequest($request);
+            LogFactory::log($this->logger, $logContext, $request, $response, null);
 
-        return new TokenBundle((string)$response->getBody());
+            $bundle = new TokenBundle((string)$response->getBody());
+            $bundle->setCreatedAt(new DateTime());
+
+            if (!$bundle->getRefreshToken()) {
+                $bundle->setRefreshToken($refreshToken);
+            }
+
+            return $bundle;
+        } catch (Throwable $exception) {
+            LogFactory::log($this->logger, $logContext, $request, null, $exception);
+
+            throw $exception;
+        }
     }
 
-    public function revokeToken(string $token): void
+    public function revokeToken(string $token, array $logContext = []): void
     {
-        $request = new Request(
-            'GET',
-            EndpointUri::AUTH . '/o/oauth2/revoke?' . http_build_query(['token' => $token]),
-            [
-                'Content-Type' => 'application/x-www-form-urlencoded',
-            ]
-        );
+        $request = new GetRevokeRequestV1($token);
 
-        $this->httpClient->sendRequest($request);
+        try {
+            $response = $this->httpClient->sendRequest($request);
+            LogFactory::log($this->logger, $logContext, $request, $response, null);
+        } catch (Throwable $exception) {
+            LogFactory::log($this->logger, $logContext, $request, null, $exception);
+
+            throw $exception;
+        }
     }
 }

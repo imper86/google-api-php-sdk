@@ -13,5 +13,5 @@ use Psr\Http\Message\ResponseInterface;
 
 interface ApiServiceInterface
 {
-    public function sendRequest(RequestInterface $request): ResponseInterface;
+    public function sendRequest(RequestInterface $request, array $logContext = []): ResponseInterface;
 }

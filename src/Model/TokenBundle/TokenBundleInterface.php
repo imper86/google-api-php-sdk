@@ -17,7 +17,11 @@ interface TokenBundleInterface
 
     public function getRefreshToken(): ?string;
 
+    public function setRefreshToken(?string $refreshToken): void;
+
     public function getCreatedAt(): ?DateTime;
+
+    public function setCreatedAt(?DateTime $createdAt): void;
 
     public function getExpiresAt(): ?DateTime;
 
@@ -25,5 +29,5 @@ interface TokenBundleInterface
 
     public function getIdToken(): ?Token;
 
-    public function serialize(): string;
+    public function toJson(): string;
 }

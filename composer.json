@@ -20,5 +20,8 @@
         "psr-4": {
             "Imper86\\GoogleApiPhpSdk\\": "src"
         }
+    },
+    "require-dev": {
+        "symfony/var-dumper": "^4.3"
     }
 }
