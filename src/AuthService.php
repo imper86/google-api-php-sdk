@@ -103,7 +103,7 @@ class AuthService implements AuthServiceInterface
             $bundle = new TokenBundle((string)$response->getBody());
             $bundle->setCreatedAt(new DateTime());
 
-            if (!$bundle->getRefreshToken()) {
+            if (empty($bundle->getRefreshToken())) {
                 $bundle->setRefreshToken($refreshToken);
             }
 
