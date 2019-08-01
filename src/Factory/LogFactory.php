@@ -67,6 +67,14 @@ class LogFactory
             $context['exceptionMessage'] = $exception->getMessage();
         }
 
+        if (strlen($context['requestBody']) > 30000) {
+            $context['requestBody'] = 'body too long - sha1 hash: ' . sha1($context['requestBody']);
+        }
+
+        if (strlen($context['responseBody']) > 30000) {
+            $context['responseBody'] = 'body too long - sha1 hash: ' . sha1($context['responseBody']);
+        }
+
         $logger->log(
             $logLevel,
             "{$context['requestMethod']} {$context['requestUriPath']} - {$context['responseStatusCode']}",

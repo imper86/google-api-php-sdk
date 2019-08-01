@@ -29,7 +29,7 @@ class BadResponseException extends Exception
             '%s resulted with %s code, message: %s',
             "{$request->getMethod()} {$request->getUri()}",
             $response->getStatusCode(),
-            substr((string)$response->getBody(), 0, 100)
+            substr((string)$response->getBody(), 0, 50)
         );
 
         parent::__construct($message, $response->getStatusCode());
