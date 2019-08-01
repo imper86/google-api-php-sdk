@@ -67,12 +67,12 @@ class LogFactory
             $context['exceptionMessage'] = $exception->getMessage();
         }
 
-        if (strlen($context['requestBody']) > 30000) {
-            $context['requestBody'] = 'body too long - sha1 hash: ' . sha1($context['requestBody']);
+        if (strlen((string)$request->getBody()) > 20000) {
+            $context['requestBody'] = 'body too long - sha1 hash: ' . sha1((string)$request->getBody());
         }
 
-        if (strlen($context['responseBody']) > 30000) {
-            $context['responseBody'] = 'body too long - sha1 hash: ' . sha1($context['responseBody']);
+        if ($response && strlen((string)$response->getBody()) > 20000) {
+            $context['responseBody'] = 'body too long - sha1 hash: ' . sha1((string)$response->getBody());
         }
 
         $logger->log(

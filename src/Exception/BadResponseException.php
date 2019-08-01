@@ -26,10 +26,9 @@ class BadResponseException extends Exception
     public function __construct(RequestInterface $request, ResponseInterface $response)
     {
         $message = sprintf(
-            '%s resulted with %s code, message: %s',
+            '%s resulted with %s code',
             "{$request->getMethod()} {$request->getUri()}",
-            $response->getStatusCode(),
-            substr((string)$response->getBody(), 0, 50)
+            $response->getStatusCode()
         );
 
         parent::__construct($message, $response->getStatusCode());
