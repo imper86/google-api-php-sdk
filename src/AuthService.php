@@ -10,6 +10,7 @@ namespace Imper86\GoogleApiPhpSdk;
 use DateTime;
 use Http\Adapter\Guzzle6\Client as GuzzleAdapter;
 use Imper86\GoogleApiPhpSdk\Constants\EndpointUri;
+use Imper86\GoogleApiPhpSdk\Exception\BadResponseException;
 use Imper86\GoogleApiPhpSdk\Factory\LogFactory;
 use Imper86\GoogleApiPhpSdk\Model\Credentials\AppCredentialsInterface;
 use Imper86\GoogleApiPhpSdk\Model\Request\Oauth2\GetRevokeRequestV1;
@@ -64,6 +65,11 @@ class AuthService implements AuthServiceInterface
 
         try {
             $response = $this->httpClient->sendRequest($request);
+
+            if ($response->getStatusCode() > 299) {
+                throw new BadResponseException($request, $response);
+            }
+
             LogFactory::log($this->logger, $logContext, $request, $response, null);
 
             $bundle = new TokenBundle((string)$response->getBody());
@@ -87,6 +93,11 @@ class AuthService implements AuthServiceInterface
 
         try {
             $response = $this->httpClient->sendRequest($request);
+
+            if ($response->getStatusCode() > 299) {
+                throw new BadResponseException($request, $response);
+            }
+
             LogFactory::log($this->logger, $logContext, $request, $response, null);
 
             $bundle = new TokenBundle((string)$response->getBody());
@@ -110,6 +121,11 @@ class AuthService implements AuthServiceInterface
 
         try {
             $response = $this->httpClient->sendRequest($request);
+
+            if ($response->getStatusCode() > 299) {
+                throw new BadResponseException($request, $response);
+            }
+
             LogFactory::log($this->logger, $logContext, $request, $response, null);
         } catch (Throwable $exception) {
             LogFactory::log($this->logger, $logContext, $request, null, $exception);
