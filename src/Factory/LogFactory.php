@@ -47,7 +47,7 @@ class LogFactory
         $context['responseStatusCode'] = $response ? $response->getStatusCode() : 0;
         $context['responseHeaders'] = $response ? $response->getHeaders() : null;
         $context['responseBody'] = $responseBodyIsJson
-            ? json_decode((string)$response->getBody())
+            ? json_decode((string)$response->getBody(), true)
             : ($response ? (string)$response->getBody() : null);
         $context['backtrace'] = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
         $context['requestHash'] = sha1(json_encode([
