@@ -15,4 +15,6 @@ interface EndpointUri
     const API = 'https://www.googleapis.com';
 
     const API_SHEETS = 'https://sheets.googleapis.com';
+
+    const API_MY_BUSINESS = 'https://mybusiness.googleapis.com';
 }

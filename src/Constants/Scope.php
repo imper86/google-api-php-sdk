@@ -15,4 +15,8 @@ interface Scope
     const AUTH_USERINFO_PROFILE = 'https://www.googleapis.com/auth/userinfo.profile';
 
     const DRIVE = 'https://www.googleapis.com/auth/drive';
+
+    const BUSINESS_MANAGE = 'https://www.googleapis.com/auth/business.manage';
+
+    const PLUS_BUSINESS_MANAGE = 'https://www.googleapis.com/auth/plus.business.manage';
 }
